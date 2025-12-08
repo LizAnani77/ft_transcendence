@@ -1,6 +1,6 @@
 [README.md](https://github.com/user-attachments/files/23980904/README.md)
 
-MERCI MAELLE "WE MADE IT" 💪!
+
 
 # ft_transcendence
 
