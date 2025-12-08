@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pong</title>
+  <link rel="icon" type="image/png" href="/favicon-pong.png" />
+
+  <!-- ✅ Styles “anti-flash” affichés avant JS/CSS applicatives -->
+  <style>
+    /* Fond/couleur immédiats pour éviter l'écran blanc */
+    html, body { height: 100%; background: #040011; color: #fff; }
+
+    /* Masquer #app jusqu'au premier rendu, puis fade-in très court */
+    #app { opacity: 0; }
+    .app-ready #app { opacity: 1; transition: opacity .12s ease; }
+
+    /* Police de secours pour éviter le clignotement si la webfont tarde */
+    body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, Roboto, sans-serif; }
+  </style>
+
+  <!-- (optionnel) précharger l'image de fond si tu l’utilises dans main.css -->
+  <link rel="preload" as="image" href="/img/bg.png">
+</head>
+<body>
+  <!-- Aucun texte de placeholder ici pour ne plus voir "Welcome ..." -->
+  <div id="app" class="with-nav"></div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>

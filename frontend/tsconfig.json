@@ -1,0 +1,134 @@
+// {
+//   "compilerOptions": {
+//     /* Version ECMAScript ciblée */
+//     "target": "ES2020",
+
+//     /* Utiliser la nouvelle sémantique pour les champs de classes */
+//     "useDefineForClassFields": true,
+
+//     /* Bibliothèques incluses */
+//     "lib": ["ES2020", "DOM", "DOM.Iterable"],
+
+//     /* Type de module généré */
+//     "module": "ESNext",
+
+//     /* Ignorer la vérification des déclarations de type */
+//     "skipLibCheck": true,
+
+//     /* Mode Bundler (Vite) */
+//     "moduleResolution": "bundler",
+//     "allowImportingTsExtensions": true,
+//     "resolveJsonModule": true,
+//     "isolatedModules": true,
+//     "noEmit": true,
+
+//     /* Vérifications et règles de lint */
+//     "strict": true,
+//     "noUnusedLocals": false,
+//     "noUnusedParameters": false,
+//     "noFallthroughCasesInSwitch": true,
+
+//     /* Mapping des chemins d'import */
+//     "baseUrl": ".",
+//     "paths": {
+//       "@/*": ["./src/*"],
+//       "@components/*": ["./src/components/*"],
+//       "@services/*": ["./src/services/*"],
+//       "@types/*": ["./src/types/*"],
+//       "@constants/*": ["./src/constants/*"],
+//       "@styles/*": ["./src/styles/*"]
+//     },
+
+//     /* Options supplémentaires */
+//     "allowSyntheticDefaultImports": true,
+//     "esModuleInterop": true,
+//     "forceConsistentCasingInFileNames": true,
+
+//     /* Types globaux disponibles */
+//     "types": ["node", "vite/client"]
+//   },
+
+//   /* Fichiers inclus dans la compilation */
+//   "include": [
+//     "src/*/*.ts",
+//     "src/*/*.d.ts",
+//     "src/*/*.tsx",
+//     "src/*/*.vue",
+//     "src/vite-env.d.ts",
+//     "vite.config.ts"
+//   ]
+// }
+
+
+{
+  "compilerOptions": {
+    /* Version ECMAScript ciblée */
+    "target": "ES2020",
+
+    /* Utiliser la nouvelle sémantique pour les champs de classes */
+    "useDefineForClassFields": true,
+
+    /* Bibliothèques incluses (DOM pour le navigateur, pas Node) */
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+
+    /* Type de module généré */
+    "module": "ESNext",
+
+    /* Ignorer la vérification des définitions de type dans node_modules */
+    "skipLibCheck": true,
+
+    /* Résolution adaptée aux bundlers modernes (Vite, Webpack...) */
+    "moduleResolution": "bundler",
+
+    /* Autoriser les imports avec extensions .ts */
+    "allowImportingTsExtensions": true,
+
+    /* Permet l'import des fichiers JSON */
+    "resolveJsonModule": true,
+
+    /* Compiler chaque fichier séparément (utile avec Vite) */
+    "isolatedModules": true,
+
+    /* Empêche TypeScript d’émettre du code JavaScript */
+    "noEmit": true,
+
+    /* Vérifications strictes du typage */
+    "strict": true,
+
+    /* Options pour éviter certains faux positifs */
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noFallthroughCasesInSwitch": true,
+
+    /* Mapping des chemins d'import */
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@components/*": ["./src/components/*"],
+      "@services/*": ["./src/services/*"],
+      "@types/*": ["./src/types/*"],
+      "@constants/*": ["./src/constants/*"],
+      "@styles/*": ["./src/styles/*"]
+    },
+
+    /* Compatibilité et import ESModules/CommonJS */
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+
+    /* Vérification stricte de la casse dans les imports */
+    "forceConsistentCasingInFileNames": true
+
+    /* ⚠️ On retire "types": ["vite/client"] pour laisser le .d.ts faire le boulot */
+  },
+
+  /* Fichiers inclus dans la compilation */
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "src/**/*.vue",
+    "src/vite-env.d.ts"
+  ],
+
+  /* Exclure les fichiers Node (vite.config.ts géré dans tsconfig.node.json) */
+  "exclude": ["vite.config.ts"]
+}

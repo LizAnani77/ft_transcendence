@@ -1,0 +1,278 @@
+services:
+  # Prépare les volumes avec les bons chemins, droits et permissions
+  volumes-init:
+    build: ./volumes-init
+    container_name: ft_transcendence_volumes_init
+    volumes:
+      - vault_waf_tls:/secrets_waf
+      - vault_backend_secrets:/secrets_backend
+      - database_data:/app/database
+      - uploads_data:/app/uploads
+    restart: "no"
+
+  # Fixe les permissions des volumes utilisés par Vault
+  vault-perms:
+    build: ./vault/perms
+    container_name: ft_transcendence_vault_perms
+    volumes:
+      - vault_data:/vault/data
+      - vault_config:/vault/config
+      - vault_logs:/vault/logs
+    restart: "no"
+
+  # Démarre le serveur Vault
+  vault:
+    build: ./vault
+    container_name: ft_transcendence_vault
+    environment:
+        VAULT_CONFIG_DIR: /vault/config
+        VAULT_ADDR: "http://127.0.0.1:8200"
+        SKIP_SETCAP: "true"
+    volumes:
+      - vault_data:/vault/data
+      - vault_config:/vault/config:ro
+      - vault_logs:/vault/logs
+    depends_on:
+      vault-perms:
+        condition: service_completed_successfully
+      volumes-init:
+        condition: service_completed_successfully
+    restart: unless-stopped
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - |
+          VAULT_ADDR=http://127.0.0.1:8200 vault status >/dev/null 2>&1
+          code=$$?
+          [ "$$code" -eq 0 ] || [ "$$code" -eq 2 ] || [ "$$code" -eq 3 ]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  # Initialise et configure Vault (unseal, policies, secrets)
+  vault-bootstrap:
+    build: ./vault/bootstrap
+    container_name: ft_transcendence_vault_bootstrap
+    user: "0:0"
+    depends_on:
+      vault:
+        condition: service_healthy
+    env_file:
+      - ./.env
+    environment:
+      VAULT_ADDR: "http://vault:8200"
+    volumes:
+      - ./.env:/vault/.env:rw
+      - vault_config:/vault/config:ro
+      - vault_waf_bootstrap:/bootstrap_waf
+      - vault_backend_bootstrap:/bootstrap_backend
+    restart: "no"
+
+  # Agent Vault qui gère automatiquement les certificats TLS pour le WAF
+  vault-agent-waf:
+    build: ./vault/agent/waf
+    image: transcendence-vault-agent-waf:local
+    container_name: ft_transcendence_vault_agent_waf
+    depends_on:
+      volumes-init:
+        condition: service_completed_successfully
+      vault-bootstrap:
+        condition: service_completed_successfully
+    environment:
+      - VAULT_ADDR=http://vault:8200
+      - VAULT_DISABLE_MLOCK=true
+    volumes:
+      - vault_waf_tls:/secrets
+      - vault_waf_bootstrap:/bootstrap:ro
+    restart: unless-stopped
+    healthcheck:
+      test:
+        - CMD
+        - sh
+        - -c
+        - |
+          test -s /secrets/tls.crt && test -s /secrets/tls.key
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # Agent Vault qui gère automatiquement les secrets du backend (env, DB)
+  vault-agent-backend:
+    build: ./vault/agent/backend
+    image: transcendence-vault-agent-backend:local
+    container_name: ft_transcendence_vault_agent_backend
+    depends_on:
+      volumes-init:
+        condition: service_completed_successfully
+      vault-bootstrap:
+        condition: service_completed_successfully
+    environment:
+      - VAULT_ADDR=http://vault:8200
+      - VAULT_DISABLE_MLOCK=true
+    volumes:
+      - vault_backend_secrets:/secrets
+      - vault_backend_bootstrap:/bootstrap:ro
+    restart: unless-stopped
+    healthcheck:
+      test:
+        - CMD
+        - sh
+        - -c
+        - |
+          test -s /secrets/app.env
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # Initialise le volume uploads avec des fichiers seed si vide
+  uploads-seed:
+    build:
+      context: .
+      dockerfile: ./uploads/Dockerfile
+    container_name: ft_transcendence_uploads_seed
+    depends_on:
+      volumes-init:
+        condition: service_completed_successfully
+    volumes:
+      - uploads_data:/mnt/up
+    restart: "no"
+
+  # Reverse proxy WAF basé sur Nginx avec certificats TLS fournis par Vault
+  waf:
+    build: 
+      context: .
+      dockerfile: ./nginx/Dockerfile
+    user: "1000:1000"
+    container_name: ft_transcendence_waf
+    ports:
+      - "3443:443"
+    volumes:
+      - vault_waf_tls:/etc/nginx/ssl:ro
+      - uploads_data:/usr/share/nginx/html/uploads:ro
+    depends_on:
+      volumes-init:
+        condition: service_completed_successfully
+      uploads-seed:
+        condition: service_completed_successfully
+      vault-agent-waf:
+        condition: service_healthy
+      frontend:
+        condition: service_healthy
+      backend:
+        condition: service_healthy
+    environment:
+      - TZ=Europe/Paris
+    read_only: true
+    tmpfs:
+      - /tmp:uid=1000,gid=1000,mode=1777
+      - /var/cache/nginx:uid=1000,gid=1000,mode=750
+      - /var/run:uid=1000,gid=1000,mode=755
+      - /run:uid=1000,gid=1000,mode=755
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - |
+          env PATH="$PATH:/usr/sbin" nginx -t >/dev/null 2>&1
+          [ -f /run/nginx.pid ] && kill -0 $(cat /run/nginx.pid) 2>/dev/null || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  # API backend avec secrets injectés par Vault
+  backend:
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
+    user: "1000:1000"
+    container_name: ft_transcendence_backend
+    volumes:
+      - vault_backend_secrets:/secrets:ro
+      - database_data:/app/database
+      - uploads_data:/app/uploads
+    environment:
+      - NODE_ENV=production
+    depends_on:
+      volumes-init:
+        condition: service_completed_successfully
+      uploads-seed:
+        condition: service_completed_successfully
+      vault-agent-backend:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test:
+        - CMD
+        - curl
+        - -f
+        - http://localhost:8080/health
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  # Frontend
+  frontend:
+    build: 
+      context: ./frontend
+      dockerfile: Dockerfile
+    user: "1000:1000"
+    container_name: ft_transcendence_frontend
+    environment:
+      - NODE_ENV=development
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test:
+        - CMD
+        - sh
+        - -c
+        - |
+          curl -f http://localhost:4000 || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  # CLI Pong
+  cli-pong:
+    build:
+      context: ./cli-pong
+      dockerfile: Dockerfile
+    user: "1000:1000"
+    container_name: ft_transcendence_cli
+    environment:
+      - API_URL=https://waf
+      - WS_URL=wss://waf/ws
+      - TZ=Europe/Paris
+    depends_on:
+      waf:
+        condition: service_healthy
+    stdin_open: true
+    tty: true
+    volumes:
+      - pong_cli_home:/home/node
+    restart: unless-stopped
+
+volumes:
+  database_data:
+    name: database_data
+  uploads_data:
+    name: uploads_data
+  vault_logs:
+    name: vault_logs
+  vault_data:
+    name: vault_data
+  vault_config:
+    name: vault_config
+  vault_waf_tls:
+    name: vault_waf_tls
+  vault_waf_bootstrap:
+    name: vault_waf_bootstrap
+  vault_backend_secrets:
+    name: vault_backend_secrets
+  vault_backend_bootstrap:
+    name: vault_backend_bootstrap
+  pong_cli_home:
+    name: pong_cli_home
