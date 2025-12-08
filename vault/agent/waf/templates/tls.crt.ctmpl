@@ -1,0 +1,4 @@
+{{ with secret "pki/issue/waf-role" "common_name=localhost" "ttl=24h" "ip_sans=127.0.0.1" "alt_names=localhost,nginx" }}
+{{ .Data.certificate }}
+{{ .Data.issuing_ca }}
+{{ end }}

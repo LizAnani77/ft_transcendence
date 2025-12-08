@@ -1,0 +1,50 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+build/
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# SSL certificates and keys (CRITICAL SECURITY)
+nginx/ssl/*.key
+nginx/ssl/*.crt
+nginx/ssl/*.pem
+*.key
+*.crt
+*.pem
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Coverage reports
+coverage/
+
+# Temporary files
+tmp/
+temp/.DS_Store
+
+# Vault files
+vault/init/out/
