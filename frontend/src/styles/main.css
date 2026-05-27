@@ -1,0 +1,632 @@
+/*@import url('https://fonts.googleapis.com/css2?family=Jura:wght@300;400;700&display=swap');*/
+/*@import url('https://fonts.googleapis.com/css2?family=Julius+Sans+One&display=swap');*/
+/*@import url('https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght@8..144,100..1000&display=swap');*/
+/*@import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed&display=swap');*/
+@import url('https://fonts.googleapis.com/css2?family=Jura:wght@300..700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Jura:wght@300;400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200');
+
+/* Directives Tailwind APRÈS l'import de police */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --brand-size-px: 26;
+  --icon-size-px: 24;
+  --page-zoom: 1;
+  --sidebar-width: 250px;
+}
+
+/* Background sur html et body pour garantir qu'il soit toujours visible */
+html, body {
+  margin: 0 !important;
+  padding: 0 !important;
+  height: 100% !important;
+  min-height: 100vh !important;
+  width: 100% !important;
+  font-family: 'Jura', sans-serif !important;
+  font-weight: 400;
+  color: white !important;
+
+  /* Background image principal — DÉPLACÉ vers body::before pour permettre l'opacité */
+  background-image: url("/img/bg.png") !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  background-attachment: fixed !important;
+
+  /* Fallback color au cas où l'image ne charge pas */
+  background-color: #040011ff;
+  position: relative; /* nécessaire pour les overlays */
+  z-index: 0;
+}
+
+/* ✅ Calque IMAGE plein écran (derrière tout) */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: url("/img/bg.png") center/cover no-repeat fixed;
+  pointer-events: none;           /* ne bloque aucun clic */
+  z-index: -2;                    /* en-dessous du voile */
+}
+
+/* ✅ Overlay semi-transparent qui fonce l'image (règle ici l'opacité) */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7) !important; /* 0.7 = bien foncé ; ajuste à ton goût */
+  pointer-events: none;                    /* ne bloque aucun clic */
+  z-index: -1;                             /* au-dessus de l'image, sous le contenu */
+}
+
+/* Container principal - PAS de padding par défaut */
+#app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh !important;
+  min-height: 100vh !important;
+  width: 100% !important;
+  font-family: 'Jura', sans-serif !important;
+  font-weight: 400;
+  color: white !important;
+
+  /* Transparent pour laisser passer le background du body */
+  background: transparent !important;
+  background-color: transparent !important;
+
+  /* ✅ S'assure que le contenu passe au-dessus des calques ::before/::after */
+  position: relative;
+  z-index: 2;
+
+  /* ✅ PAS de padding par défaut - sera ajouté conditionnellement */
+  padding-left: 0;
+  box-sizing: border-box;
+}
+
+/* ✅ Ajouter le padding seulement quand la sidebar ou la nav est présente */
+#app.with-sidebar,
+#app.with-nav {
+  padding-left: var(--sidebar-width);
+  transition: padding-left 0.3s ease;
+}
+
+/* S'assurer que tous les conteneurs principaux restent transparents */
+.main-content,
+.page-container,
+.app-container {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+/* ========================================
+   🎯 STYLES DES BOUTONS - POLICE JURA UNIQUEMENT
+   ======================================== */
+
+/* ✅ Tous les boutons utilisent Jura */
+button,
+.btn,
+[type="button"],
+[type="submit"],
+[type="reset"],
+input[type="button"],
+input[type="submit"],
+input[type="reset"] {
+  font-family: 'Jura', sans-serif !important;
+  font-weight: 500;
+  letter-spacing: 0.025em;
+}
+
+/* ========================================
+   🎨 TRANSFORMATION DES CLASSES TAILWIND bg-* EN TRANSPARENT
+   ======================================== */
+
+/* Teal/Cyan */
+.bg-teal-600 {
+  background: rgba(13, 148, 136, 0.2) !important;
+  border: 1px solid #14b8a6 !important;
+  border-radius: 6px !important;
+}
+
+.bg-teal-700 {
+  background: rgba(15, 118, 110, 0.2) !important;
+  border: 1px solid #0f766e !important;
+  border-radius: 6px !important;
+}
+
+/* Blue */
+.bg-blue-600 {
+  background: rgba(37, 99, 235, 0.2) !important;
+  border: 1px solid #3b82f6 !important;
+  border-radius: 6px !important;
+}
+
+.bg-blue-700 {
+  background: rgba(29, 78, 216, 0.2) !important;
+  border: 1px solid #1d4ed8 !important;
+  border-radius: 6px !important;
+}
+
+/* Indigo */
+.bg-indigo-600 {
+  background: rgba(99, 102, 241, 0.2) !important;
+  border: 1px solid #818cf8 !important;
+  border-radius: 6px !important;
+}
+
+.bg-indigo-700 {
+  background: rgba(67, 56, 202, 0.2) !important;
+  border: 1px solid #4338ca !important;
+  border-radius: 6px !important;
+}
+
+/* Purple */
+.bg-purple-600 {
+  background: rgba(147, 51, 234, 0.2) !important;
+  border: 1px solid #a855f7 !important;
+  border-radius: 6px !important;
+}
+
+.bg-purple-700 {
+  background: rgba(126, 34, 206, 0.2) !important;
+  border: 1px solid #7e22ce !important;
+  border-radius: 6px !important;
+}
+
+/* Pink */
+.bg-pink-600 {
+  background: rgba(219, 39, 119, 0.2) !important;
+  border: 1px solid #ec4899 !important;
+  border-radius: 6px !important;
+}
+
+.bg-pink-700 {
+  background: rgba(190, 24, 93, 0.2) !important;
+  border: 1px solid #be185d !important;
+  border-radius: 6px !important;
+}
+
+/* Red */
+.bg-red-600 {
+  background: rgba(220, 38, 38, 0.2) !important;
+  border: 1px solid #ef4444 !important;
+  border-radius: 6px !important;
+}
+
+.bg-red-700 {
+  background: rgba(185, 28, 28, 0.2) !important;
+  border: 1px solid #b91c1c !important;
+  border-radius: 6px !important;
+}
+
+/* Orange */
+.bg-orange-600 {
+  background: rgba(234, 88, 12, 0.2) !important;
+  border: 1px solid #f97316 !important;
+  border-radius: 6px !important;
+}
+
+.bg-orange-700 {
+  background: rgba(194, 65, 12, 0.2) !important;
+  border: 1px solid #c2410c !important;
+  border-radius: 6px !important;
+}
+
+/* Yellow */
+.bg-yellow-600 {
+  background: rgba(202, 138, 4, 0.2) !important;
+  border: 1px solid #eab308 !important;
+  border-radius: 6px !important;
+}
+
+.bg-yellow-700 {
+  background: rgba(161, 98, 7, 0.2) !important;
+  border: 1px solid #a16207 !important;
+  border-radius: 6px !important;
+}
+
+/* Green */
+.bg-green-600 {
+  background: rgba(22, 163, 74, 0.2) !important;
+  border: 1px solid #22c55e !important;
+  border-radius: 6px !important;
+}
+
+.bg-green-700 {
+  background: rgba(21, 128, 61, 0.2) !important;
+  border: 1px solid #15803d !important;
+  border-radius: 6px !important;
+}
+
+/* Emerald */
+.bg-emerald-600 {
+  background: rgba(5, 150, 105, 0.2) !important;
+  border: 1px solid #10b981 !important;
+  border-radius: 6px !important;
+}
+
+.bg-emerald-700 {
+  background: rgba(4, 120, 87, 0.2) !important;
+  border: 1px solid #047857 !important;
+  border-radius: 6px !important;
+}
+
+/* Gray/Slate foncé */
+.bg-gray-600 {
+  background: rgba(75, 85, 99, 0.2) !important;
+  border: 1px solid #6b7280 !important;
+  border-radius: 6px !important;
+}
+
+.bg-gray-700 {
+  background: rgba(55, 65, 81, 0.2) !important;
+  border: 1px solid #4b5563 !important;
+  border-radius: 6px !important;
+}
+
+.bg-slate-600 {
+  background: rgba(71, 85, 105, 0.2) !important;
+  border: 1px solid #64748b !important;
+  border-radius: 6px !important;
+}
+
+.bg-slate-700 {
+  background: rgba(51, 65, 85, 0.2) !important;
+  border: 1px solid #334155 !important;
+  border-radius: 6px !important;
+}
+
+/* Couleur pong custom */
+.bg-pong-green {
+  background: rgba(0, 255, 0, 0.2) !important;
+  border: 1px solid #00ff00 !important;
+  border-radius: 6px !important;
+}
+
+/* ========================================
+   🎯 BOUTONS AVEC STYLES INLINE (ID spécifiques)
+   ======================================== */
+
+/* Boutons style 42 OAuth (même style que "Continue with 42") */
+#btn-create-tournament,
+#btn-start-tournament,
+.btn-ready,
+.join-tournament-btn {
+  background: #0f172a !important;
+  border: 1px solid rgba(14, 165, 233, 0.6) !important;
+  font-weight: 600 !important;
+}
+
+/* Bouton quit tournament - style rose et blanc */
+#btn-quit-tournament {
+  background: rgba(198, 32, 157, 0.2) !important;
+  border: 1px solid #c6209d !important;
+  color: #ffffff !important;
+  font-weight: 600 !important;
+}
+
+/* Boutons Login et Register avec bordure blanche */
+#login-form button[type="submit"],
+#register-form button[type="submit"] {
+  border: 1px solid rgba(255, 255, 255, 0.6) !important;
+}
+
+/* Bouton liste (déjà transparent mais on assure la cohérence) */
+#btn-list-tournaments {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.6) !important;
+}
+
+/* Bouton Avatar par défaut avec bordure rose */
+button[data-clear-avatar] {
+  border: 1px solid #c6209d !important;
+}
+
+/* ========================================
+   FIN DES STYLES BOUTONS
+   ======================================== */
+
+/* Classe pour centrer le contenu d'une page */
+.page-content-centered {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Contenu principal avec sidebar */
+.main-content {
+  flex: 1;
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+/* Styles pour la sidebar navigation */
+.sidebar-nav {
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
+  height: 100svh;
+  max-height: 100dvh;
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* Hover effects pour les liens de navigation */
+.sidebar-link-hover:hover {
+  background: rgba(255, 255, 255, 0.15) !important;
+  border-left-color: rgba(255, 255, 255, 0.5) !important;
+}
+
+/* Hover effect pour le bouton logout */
+.nav-button:hover {
+  background: rgba(255, 255, 255, 0.2) !important;
+  transform: translateY(-1px);
+}
+
+/* Hover effect pour les boutons de langue */
+button[data-action="set-lang"]:hover {
+  background: rgba(255, 255, 255, 0.15) !important;
+  border-color: rgba(255, 255, 255, 0.4) !important;
+  transform: translateY(-1px);
+}
+
+/* Effets de survol */
+.hover-bright {
+  background: rgba(255, 255, 255, 0.1);
+  transition: background 0.2s ease;
+}
+
+.hover-bright:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Navigation adaptative - garder pour compatibilité si utilisé ailleurs */
+.nav-link {
+  background-color: transparent;
+  transition: background-color 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.nav-link .material-symbols-outlined {
+  font-size: 1.25rem;
+  font-variation-settings: 
+    'FILL' 0,
+    'wght' 300,
+    'GRAD' 0,
+    'opsz' 24;
+}
+
+.nav-link .material-symbols-outlined {
+  /* calcule une taille CSS inverse du zoom */
+  font-size: calc(var(--icon-size-px) / var(--page-zoom) * 1px) !important;
+  line-height: 1; /* garde le box bien compact */
+}
+
+.nav-active .material-symbols-outlined {
+  font-variation-settings: 
+    'FILL' 1,
+    'wght' 500,
+    'GRAD' 0,
+    'opsz' 24;
+}
+
+.nav-active {
+  background-color: rgba(255, 255, 255, 0.15) !important;
+  font-weight: bold;
+}
+
+/* Bloc sous le chat (compact) */
+.chat-under {
+  display: flex;
+  flex-direction: column;
+  background: rgba(255,255,255,.06);
+  border-radius: 8px;
+  padding: 0.5rem;              /* ↓ réduit */
+  /* max-height: 120px;            borne la hauteur */
+  overflow: auto;               /* scroll si contenu long */
+}
+
+.chat-under__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: .25rem;        /* ↓ réduit */
+}
+
+#chat-header-name {
+  font-size: 0.9rem;            /* ↓ réduit */
+}
+
+.chat-recipient {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  transition: background 0.2s ease;
+}
+
+.chat-recipient:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Zone principale de messages */
+#chat-messages {
+  scrollbar-width: thin; /* valeurs possibles: auto | thin | none */
+  scrollbar-color: rgba(255, 255, 255, 0.20) transparent;
+  scrollbar-gutter: stable both-edges;
+}
+
+/* Bulles de chat (si scroll interne) */
+.chat-bubble {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.30) rgba(0, 0, 0, 0.10);
+  border-radius: 8px !important;
+}
+
+/* Styles pour l'autocomplétion */
+input:-webkit-autofill,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px #374151 inset !important;
+  box-shadow: 0 0 0 1000px #374151 inset !important;
+  background-color: #374151 !important;
+  color: white !important;
+  -webkit-text-fill-color: white !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+/* 🎮 Canvas de jeu transparent */
+#game-canvas {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+/* Animation pour le spinner de chargement du dashboard */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Classes utilitaires pour les couleurs de texte */
+.text-green-400 { color: #4ade80; }
+.text-yellow-400 { color: #facc15; }
+.text-red-400 { color: #f87171; }
+.text-blue-400 { color: #60a5fa; }
+.text-gray-400 { color: #9ca3af; }
+
+/* Hover effects pour les boutons du dashboard */
+#refresh-dashboard:hover {
+  background: #064c48 !important;
+  transform: scale(1.05);
+}
+
+/* Responsive - sur petits écrans, cacher la sidebar ou la rendre overlay */
+@media (max-width: 768px) {
+  #app.with-sidebar,
+  #app.with-nav {
+    padding-left: var(--sidebar-width);
+  }
+  
+  .sidebar-nav {
+    transform: none !important;
+    transition: none !important;
+  }
+}
+
+/* Mode sidebar réduite (uniquement icônes) pour écrans moyens */
+@media (max-width: 1200px) {
+  /* Réduire la largeur via variable pour cohérence */
+  :root { --sidebar-width: 90px; }
+  .sidebar-nav {
+    width: var(--sidebar-width) !important;
+  }
+  
+  /* Ajuster le padding de l'app */
+  #app.with-sidebar,
+  #app.with-nav {
+    padding-left: var(--sidebar-width) !important;
+  }
+  
+  /* Cacher le texte des liens, garder seulement les icônes */
+  .nav-link span:not(.material-symbols-outlined) {
+    display: none !important;
+  }
+  
+  /* Centrer les icônes */
+  .nav-link {
+    justify-content: center !important;
+    padding: 0.75rem 0 !important;
+  }
+  
+  /* Ajuster la taille des icônes */
+  .nav-link .material-symbols-outlined {
+    /* Si tu veux une taille un peu plus grande en mode réduit, 
+      augmente seulement var(--icon-size-px) via la classe/état.
+      Par défaut on conserve la même formule. */
+    font-size: calc(var(--icon-size-px) / var(--page-zoom) * 1px) !important;
+  }
+  
+  /* Cacher le texte du brand, garder juste "P" ou une icône */
+  .sidebar-nav > a[href="/"] {
+    font-size: calc(var(--brand-size-px) / var(--page-zoom) * 1px) !important;
+    text-align: center !important;
+    padding: 0 !important;
+  }
+  
+  /* Réduire le badge utilisateur */
+  .sidebar-nav > div:first-of-type {
+    padding: 1rem 0.5rem !important;
+  }
+  
+  /* Cacher le username dans le badge */
+  .sidebar-nav > div:first-of-type span:not(.material-symbols-outlined) {
+    display: none !important;
+  }
+  
+  /* Centrer l'avatar */
+  .sidebar-nav > div:first-of-type > div {
+    justify-content: center !important;
+  }
+  
+  /* Réduire la taille de l'avatar */
+  .sidebar-nav img[alt] {
+    width: 40px !important;
+    height: 40px !important;
+  }
+  
+  /* Adapter le bouton logout */
+  .nav-button[data-action="logout"] {
+    font-size: 0 !important;
+    padding: 0.5rem !important;
+    position: relative;
+  }
+  
+  .nav-button[data-action="logout"]::before {
+    content: "logout";
+    font-family: 'Material Symbols Outlined';
+    font-size: calc(var(--icon-size-px) / var(--page-zoom) * 1px);
+    font-variation-settings: 
+      'FILL' 0,
+      'wght' 300,
+      'GRAD' 0,
+      'opsz' 24;
+  }
+  
+  button[data-action="set-lang"] {
+    font-size: 0.6rem !important;
+    padding: 0.25rem 0.2rem !important;
+    min-width: 0 !important;
+    flex: 1 1 auto !important;
+    max-width: 28px !important;
+    text-align: center !important;
+    border-radius: 4px !important;
+  }
+
+  .sidebar-nav > div:last-child {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 0.2rem !important;
+    padding: 0.4rem 0 !important;
+    max-width: 90px !important;
+    margin: 0 auto !important;
+  }
+} 

@@ -1,0 +1,41 @@
+{
+  "compilerOptions": {
+    /* Active le mode projet composite pour supporter des builds incrémentaux */
+    "composite": true,
+
+    /* Ignore la vérification des définitions de type dans node_modules */
+    "skipLibCheck": true,
+
+    /* Utilisation des modules ESNext (import/export moderne) */
+    "module": "ESNext",
+
+    /* Résolution des modules adaptée aux bundlers (Vite, Webpack...) */
+    "moduleResolution": "bundler",
+
+    /* Autorise l'importation de modules sans export par défaut */
+    "allowSyntheticDefaultImports": true,
+
+    /* Active le mode strict de TypeScript (meilleure sécurité de typage) */
+    "strict": true,
+
+    /* Empêche TypeScript d’émettre du code JavaScript */
+    "noEmit": true,
+
+    /* Types à inclure globalement (ici Node.js) */
+    "types": ["node"],
+
+    /* Permet la compatibilité avec les modules CommonJS */
+    "esModuleInterop": true
+  },
+
+  /* Fichiers pris en compte par la compilation */
+  "include": [
+    "vite.config.ts",
+    "tailwind.config.js"
+  ],
+
+  /* Fichiers ou dossiers à exclure */
+  "exclude": [
+    "node_modules"
+  ]
+}
